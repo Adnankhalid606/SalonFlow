@@ -1,0 +1,13 @@
+# ENV FILES
+.env
+server/.env
+clint/.env
+
+# NODE MODULES
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# VSCODE
+.vscode
+
