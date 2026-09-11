@@ -1,7 +1,7 @@
 # ENV FILES
 .env
 server/.env
-clint/.env
+client/.env
 
 # NODE MODULES
 node_modules/
