@@ -162,7 +162,7 @@ export const updateEmployee = async (req, res, next) => {
 export const deleteEmployee = async (req, res, next) => {
   const id = req.params.id;
   try {
-    const employee = await Employee.findById({
+    const employee = await Employee.findOne({
       _id: id,
       panel_id: req.user.panel_id,
     });
