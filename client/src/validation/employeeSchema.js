@@ -19,4 +19,5 @@ export const createEmployeeSchema = z.object({
                frequency: z.enum(['daily','weekly','monthly'])
            })
        ]),
+       isActive: z.boolean()
 })

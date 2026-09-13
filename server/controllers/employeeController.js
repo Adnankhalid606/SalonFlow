@@ -126,15 +126,15 @@ export const updateEmployee = async (req, res, next) => {
     ) {
       return res.status(400).json({ message: "Please add one field atleast." });
     }
-    const employee = await Employee.findById({
+    const employee = await Employee.findOne({
       _id: id,
       panel_id: req.user.panel_id,
     });
     if (!employee) {
       return res.status(404).json({ message: "Employee not found." });
     }
-    const updateEmployee = await Employee.findByIdAndUpdate(
-      id,
+    const updateEmployee = await Employee.findOneAndUpdate(
+      {_id: id, panel_id: req.user.panel_id},
       {
         $set: {
           name: name ?? employee.name,

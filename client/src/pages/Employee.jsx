@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getAllEmployeesApi } from "../api/EmployeeServices";
+import { deleteEmployeeApi, getAllEmployeesApi } from "../api/EmployeeServices";
 import dayjs from "dayjs";
-import {   tableFeatures, useTable } from "@tanstack/react-table";
+import EmployeeCard from "../components/employeeCard";
 function Employee() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,30 +47,6 @@ function Employee() {
     { length: pagination?.totalPages },
     (_, index) => index + 1,
   );
-  const features = tableFeatures({});
-  const columns = [
-    {
-      accessorKey: "name",
-      header: "Name",
-    },
-    {
-      accessorKey: "phone",
-      header: "Phone",
-    },
-    {
-      accessorKey: "isActive",
-      header: "Status",
-    },
-    {
-      accessorKey: "joinedDate",
-      header: "Joined Date",
-    },
-  ];
-  const table = useTable({
-    features,
-    columns,
-    data: employees,
-  });
   if (loading) {
     return (
       <>
@@ -80,6 +56,16 @@ function Employee() {
       </>
     );
   }
+  async function deleteEmployee(id){
+    try{
+      const response = await deleteEmployeeApi(id);
+      alert(response?.data?.message)
+      setEmployees((currentEmployee)=>currentEmployee.filter((employee)=> employee._id !== id))
+    } catch(error){
+      setError(error?.response?.data?.message || "Failed to delete employee")
+    }
+  }
+    console.log(employees)
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Employees</h1>
@@ -160,21 +146,12 @@ function Employee() {
           <option value={50}>50</option>
         </select>
       </div>
-      <table>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder ? null : (
-                    <table.FlexRender header={header} />
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-      </table>
+      <div className="grid grid-cols-4 gap-5 justify-items-center">
+      {
+        employees.map((emp)=>(<EmployeeCard employee={emp} key={emp._id} onDelete={deleteEmployee} />))
+      }
+      </div>
+
       {error && (
         <div
           className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
@@ -194,7 +171,6 @@ function Employee() {
         {pages &&
           pages.length > 0 &&
           pages.map((p) => (
-            <>
               <button
                 className={`m-1 p-2 border rounded-lg ${p === page ? "bg-blue-500 text-white" : ""}`}
                 key={p}
@@ -202,7 +178,7 @@ function Employee() {
               >
                 {p}
               </button>
-            </>
+
           ))}
         <button
           className="m-1 p-2 border rounded-lg"

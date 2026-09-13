@@ -6,6 +6,7 @@ import AppLayout from "../components/AppLayout";
 import Register from "../pages/Register";
 import Employee from "../pages/Employee";
 import CreateEmployee from "../pages/CreateEmployee";
+import UpdateEmployee from "../pages/UpdateEmployee";
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
             path: "/employee/create",
             element: <CreateEmployee/>,
           },
+          {
+            path: "/employee/update/:id",
+            element: <UpdateEmployee/>,
+          }
         ],
       },
     ],
