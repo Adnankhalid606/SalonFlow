@@ -1,12 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "../pages/Login";
-import Temporary from "../pages/temporary";
 import ProtectedRoute from "./ProtectedRoute";
 import AppLayout from "../components/AppLayout";
 import Register from "../pages/Register";
 import Employee from "../pages/Employee";
 import CreateEmployee from "../pages/CreateEmployee";
-import UpdateEmployee from "../pages/UpdateEmployee";
+import UpdateEmployee from "../pages/EditEmployee";
+import Dashboard from "../pages/Dashboard";
+import Services from "../pages/Services";
+import UpdateService from "../pages/EditService";
+import CreateService from "../pages/createService";
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -24,7 +27,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/",
-            element: <Temporary />,
+            element: <Dashboard/>,
           },
           {
             path: "/employee",
@@ -35,8 +38,20 @@ const router = createBrowserRouter([
             element: <CreateEmployee/>,
           },
           {
-            path: "/employee/update/:id",
+            path: "/employee/edit/:id",
             element: <UpdateEmployee/>,
+          },
+          {
+            path: "/services",
+            element: <Services /> ,
+          },
+          {
+            path:"/service/create",
+            element: <CreateService/>
+          },
+          {
+            path: "/service/edit/:id",
+            element: <UpdateService/>
           }
         ],
       },

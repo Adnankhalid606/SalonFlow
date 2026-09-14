@@ -65,7 +65,7 @@ function Employee() {
       setError(error?.response?.data?.message || "Failed to delete employee")
     }
   }
-    console.log(employees)
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Employees</h1>

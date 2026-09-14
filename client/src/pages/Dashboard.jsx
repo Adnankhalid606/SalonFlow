@@ -1,6 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
 
-function Temporary() {
+function Dashboard() {
   const {user, authLoading} = useAuth();
   if(authLoading){
     return(
@@ -19,4 +19,4 @@ function Temporary() {
     </>
   );
 }
-export default Temporary;
+export default Dashboard;

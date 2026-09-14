@@ -52,7 +52,7 @@ function EmployeeCard({employee, onDelete}) {
         <button
           type="button"
           className="inline-flex items-center justify-center w-1/2 px-4 py-3 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700 transition-colors border-r border-gray-200 dark:border-gray-700 gap-2"
-          onClick={()=> navigate(`/employee/update/${employee._id}`) }
+          onClick={()=> navigate(`/employee/edit/${employee._id}`) }
         >
           <svg
             className="w-4 h-4"
