@@ -7,37 +7,51 @@ function Services() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [pagination, setPagination] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [sort, setSort] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
   const [deletingId, setDeletingId] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchServices() {
-      try {
-        setLoading(true);
-        setError("");
-        const response = await getAllServicesApi();
-        if (response?.status >= 200 && response?.status < 300) {
-          setServices(response?.data?.data || []);
-        } else {
-          setError(
-            response?.response?.data?.message ||
-              response?.message ||
-              "Error fetching services",
-          );
+    const timer = setTimeout(() => {
+      async function fetchServices() {
+        try {
+          setLoading(true);
+          setError("");
+          const response = await getAllServicesApi({
+            search: search,
+            page: page,
+            limit: limit,
+            sort: sort,
+            sortOrder: sortOrder,
+          });
+          setServices(response?.data?.data);
+          setPagination(response?.data?.pagination);
+        } catch (err) {
+          setError(err?.response?.data?.message || "Error fetching services");
+        } finally {
+          setLoading(false);
         }
-      } catch (err) {
-        setError(err?.response?.data?.message || "Error fetching services");
-      } finally {
-        setLoading(false);
       }
-    }
-    fetchServices();
-  }, []);
+      fetchServices();
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [search, page, limit, sort, sortOrder]);
 
   if (loading) {
     return <p>Loading...</p>;
   }
-
+  const pages = Array.from(
+    { length: pagination.totalPages },
+    (_, index) => index + 1,
+  );
   async function handleDelete(id, name) {
     if (!window.confirm(`Are you sure you want to delete "${name}"?`)) return;
 
@@ -73,8 +87,7 @@ function Services() {
             </h1>
             {!loading && (
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                {services.length}{" "}
-                {services.length === 1 ? "Service" : "Services"}
+                {services.length}
               </span>
             )}
           </div>
@@ -82,26 +95,90 @@ function Services() {
             Browse and manage all salon services, pricing, and offerings.
           </p>
         </div>
-
-        <button
-          onClick={() => navigate("/service/create")}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl shadow-xs transition-colors cursor-pointer shrink-0"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        {/* Sort */}
+        <div className="flex gap-2">
+          <select
+            className="border border-gray-400 rounded-md p-2"
+            value={`${sort}:${sortOrder}`}
+            onChange={(e) => {
+              if (e.target.value === "") {
+                setSort("");
+                setSortOrder("asc");
+                return;
+              }
+              const [sort, sortOrder] = e.target.value.split(":");
+              setSort(sort);
+              setSortOrder(sortOrder);
+            }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          Add Service
-        </button>
+            <option value=""> Sort by : Default</option>
+            <option value="name:asc">Name: A-Z</option>
+            <option value="name:desc">Name: Z-A</option>
+            <option value="price:asc">Price: Low to High</option>
+            <option value="price:desc">Price: High to Low</option>
+          </select>
+          <select
+            onChange={(e) => {
+              setLimit(Number(e.target.value))
+            }}
+            value={limit}
+            >
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+        <div className="flex gap-3 ">
+          {/* search bar */}
+          <div className="flex gap-2">
+            <form onSubmit={(e) => e.preventDefault()}>
+              <input
+                className="border border-gray-400 rounded-md p-2"
+                type="text"
+                placeholder="Search services"
+                onChange={(e) => setInputValue(e.target.value)}
+                value={inputValue}
+              />
+              <button
+                onClick={() => setSearch(inputValue)}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5   text-indigo-600 text-sm font-medium rounded-xl  transition-colors cursor-pointer shrink-0 hover:text-white hover:bg-indigo-600"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+            </form>
+          </div>
+          <button
+            onClick={() => navigate("/service/create")}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl shadow-xs transition-colors cursor-pointer shrink-0"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Service
+          </button>
+        </div>
       </div>
 
       {/* Error State */}
@@ -284,6 +361,36 @@ function Services() {
           ))}
         </div>
       )}
+      <div className="flex justify-center items-center gap-3 mt-5">
+        <button
+          className={`border p-2 rounded-lg ${page === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+          onClick={() => setPage(page - 1)}
+          disabled={page === 1}
+        >
+          Previous
+        </button>
+        {pages &&
+          pages.length > 0 &&
+          pages.map((p) => (
+            <button
+              key={p}
+              className={`px-4 py-2 border border-gray-300 rounded-md ${p === pagination.currentPage ? "bg-blue-600 text-white" : ""}`}
+              disabled={p === pagination.currentPage}
+              onClick={() => {
+                setPage(p);
+              }}
+            >
+              {p}
+            </button>
+          ))}
+        <button
+          className={`border p-2 rounded-lg ${page === pagination.totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+          onClick={() => setPage(page + 1)}
+          disabled={page === pagination.totalPages}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
