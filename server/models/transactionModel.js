@@ -7,11 +7,18 @@ const transactionSchema = new mongoose.Schema(
       ref: "panel",
       required: true,
     },
-
+    performedBy: {
+      type: String,
+      enum: ["employee", "owner"],
+      required: true,
+    },
     employee_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "employee",
-      required: true,
+      required: function () {
+        return this.performedBy === "employee";
+      },
+      default: null,
     },
 
     service_id: {
@@ -70,7 +77,7 @@ const transactionSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 const Transaction = mongoose.model("transaction", transactionSchema);

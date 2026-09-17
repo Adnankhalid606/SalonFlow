@@ -21,7 +21,7 @@ app.use(morgan("dev"));
 app.use("/api/user", userRoutes);
 app.use("/api/employee", employeeRoutes);
 app.use("/api/services", servicesRouters);
-app.use("/api/transation", transactionRoutes);
+app.use("/api/transaction", transactionRoutes);
 
 app.use(errorMiddleware);
 
